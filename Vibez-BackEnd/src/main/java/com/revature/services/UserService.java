@@ -1,22 +1,32 @@
 package com.revature.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import com.revature.models.User;
 import com.revature.DAOs.UserDao;
 import com.revature.exceptions.UserNotFoundException;
-import com.revature.models.User;
 
 @Service
 public class UserService {
-	
+	private S3Service s3;
 	private UserDao ud;
 
 	@Autowired
-	public UserService(UserDao ud) {
+	public UserService(UserDao ud, S3Service s3) {
 		this.ud = ud;
+		this.s3 = s3;
+	}
+
+	// Below fields allow us to manipulate User object on the Database.
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void createUser(User u) {
+		ud.save(u);
 	}
 
 	public List<User> getAllUsers() {
@@ -24,27 +34,68 @@ public class UserService {
 	}
 
 	public List<User> getUserByUsername(String username) {
-		return ud.findUserByUsername(username);
+		List<User> users = ud.findByUsername(username);
+		for (User u : users) {			
+			if (u.getUuid() != null) {				
+				u.setProfilePicture(s3.getSignedUrl(u.getUuid()));
+			}			
+			u.setPassword(null);			
+		}
+		return users;
 	}
-	
+
 	public User getUserById(int id) {
 		return ud.findById(id).orElseThrow(UserNotFoundException::new);
 	}
-	
 
 	public List<User> getUserByEmail(String email) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void createUser(User user) {
-		// TODO Auto-generated method stub
-		
+	public void updateUser(User u) {		
+		List<User> users = ud.findByUsername(u.getUsername());		
+		User currentUser = users.get(0);		
+		if(!u.getFirstName().isEmpty()) {
+			currentUser.setFirstName(u.getFirstName());
+		}
+		if(!u.getLastName().isEmpty()) {
+			currentUser.setLastName(u.getLastName());
+		}
+		if(!u.getEmail().isEmpty()) {
+			currentUser.setEmail(u.getEmail());
+		}
+		if(!u.getPassword().isEmpty()) {
+			currentUser.setPassword(u.getPassword());
+		}
+		if(!u.getBio().isEmpty()) {
+			currentUser.setBio(u.getBio());
+		}
+		ud.save(currentUser);
+
 	}
 
-	public void updateUser(int id, User user) {
-		// TODO Auto-generated method stub
-		
+	public User uploadProfileImage(String username, MultipartFile file) {
+		List<User> users = ud.findByUsername(username);
+		User user = users.get(0);
+		try {
+			saveImage(user, file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ud.save(user);
+		return user;
+	}
+
+	public User saveImage(User u, MultipartFile file) throws IOException {
+		S3Service s3 = new S3Service();
+		try {
+			u.setUuid(s3.upload(file));
+			u.setProfilePicture(s3.getSignedUrl(u.getUuid()));
+			return u;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
