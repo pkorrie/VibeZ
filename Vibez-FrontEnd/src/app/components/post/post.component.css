@@ -1,9 +1,276 @@
-.onepost {
-    background-color: darkgrey;
-    text-align: center;
-    padding: 1rem;
-    margin: 1rem;
-    border-radius: .25rem;
-    font-size: 3rem;
-    font-family: Arial, Helvetica, sans-serif;
+* {
+    box-sizing: border-box;
 }
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+
+.post {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 55rem;
+    min-width: 5rem;
+    margin: 50px auto;
+    box-shadow: 0 5px 15px 0 #777;
+    border-radius: 10px;
+    color: whitesmoke
+}
+
+.replies {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 45rem;
+    min-width: 5rem;
+    margin: 50px auto;
+}
+
+.post-date {
+    display: inline;
+    font-size: 13px;
+    color: #bbb;
+    width: 10rem;
+}
+
+.post-author {
+    color: #555;
+}
+
+.post-author:hover {
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+input[type="text"] {
+    word-wrap: break-word;
+    word-break: break-all;
+    height: 80px;
+}
+
+.post-image {
+    position: relative;
+    max-width: 25rem;
+    max-height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+}
+
+.post-picture {
+    border-radius: 10px 0 0 10px;
+    height: auto;
+    max-width: 25rem;
+    height: 100%;
+}
+
+.post-container {
+    margin: 1rem 1rem 1rem 1.5rem;
+    height: 100%;
+    width: 100%;
+}
+
+.post-title {
+    margin-top: 1rem;
+}
+
+.post-title:hover {
+    cursor: default;
+}
+
+.post-link {
+    display: inline-block;
+    margin: 0 0 15px;
+    padding: 16px 48px;
+    background: lightblue;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4em;
+    transition: background .2s ease-in-out;
+}
+
+.post-link:hover {
+    background: darken(lightblue, 10%);
+}
+
+.btn {
+    background: fuchsia;
+    border: 1px solid fuchsia;
+    margin-top: 1rem;
+    color: black;
+    font-weight: bolder;
+}
+
+.btn:hover {
+    text-decoration: underline;
+}
+
+.show-comments, .hide-comments {
+    margin-top: 1rem;
+}
+
+.show-comments:hover, .hide-comments:hover {
+    cursor: pointer;
+}
+
+.reset-div {
+    border: 0;
+    margin: 0;
+}
+
+
+.animate-border {
+    animation-duration: 5s;
+    animation-name: funVibe;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+}
+
+.regular-border {
+    border: .5rem solid transparent;
+}
+
+@keyframes funVibe {
+    0% {
+        border: .5rem solid red;
+    }
+
+    20% {
+        border: .5rem solid orange;
+    }
+
+    40% {
+        border: .5rem solid green;
+    }
+
+    60% {
+        border: .5rem solid blue;
+    }
+
+    80% {
+        border: .5rem solid indigo;
+    }
+
+    100% {
+        border: .5rem solid violet;
+    }
+}
+
+.reply-profile-picture {
+    border-radius: 5rem;
+    height: 5rem;
+    width: 5rem;
+    margin-right: 1rem;
+    display: inline;
+}
+
+.like {
+    color: grey;
+}
+
+.dislike {
+    color: red;
+}
+
+.like,
+.dislike {
+    text-decoration: none;
+    max-width: 2rem;
+    font-size: x-large;
+    display: inline;
+    border: none;
+    background-color: #202020;
+    margin: 0 1.5rem;
+    user-select: none;
+}
+
+.like:hover, .dislike:hover {
+    cursor: pointer;
+}
+
+.likes-reply-button-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.number-of-likes {
+    font-size: x-large;
+    display: inline;
+    line-height: 1rem;
+}
+
+.number-of-likes:hover {
+    cursor: default;
+    user-select: none;
+}
+
+.reply-button, .reply-button-clicked {
+    display: inline;
+    font-size: 1rem;
+    text-decoration: none;
+    user-select: none;
+}
+
+.reply-button-clicked {
+    color: darkgrey;
+}
+
+.reply-button:hover, .reply-button-clicked:hover {
+    cursor: pointer;
+}
+
+.reply-form {
+    max-width: 43rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #202020;
+    margin: 0 auto;
+}
+
+
+.reply-form-textarea {
+    width: 100%;
+    background-color: #202020;
+    padding: 1rem;
+    color: whitesmoke;
+}
+
+/* media queries must come last to override others */
+
+@media screen and (max-width: 1024px) {
+    .post {
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .post {
+        flex-direction: column;
+    }
+
+    .post-image {
+        height: 270px;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 800px) {
+    .profile-image {
+        max-width: 5rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .profile-image {
+        min-width: 15rem;
+    }
+}
+
+/* ------------------------ */

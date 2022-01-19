@@ -1,20 +1,58 @@
-<ng-container>
-    <div class="onepost" (click)="click()">
-        <div>Title: {{post.title}}</div>
-        <div>Content: {{post.content}}</div>
-        <div>Created: {{post.creationDate}}</div>
-        <form>
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1"></label>
-                <textarea class="form-control" type="text" id="exampleFormControlTextarea1" rows="3" #comment>Add a comment...</textarea>
-              </div>
-              <button class="btn btn-primary" (click)="createComment(post.id, comment.value)">Post</button>
-        </form>
-        <div *ngIf="showComments && post.comments.length > 0">
-            <div *ngFor="let comment of post.comments">
-                <app-post [post]="comment"></app-post>
-                <hr>
+<!-- Parent post -->
+<div class="post" [ngClass]="post.likes.length > 2 ? 'animate-border' : 'regular-border'">
+    <img *ngIf="!post.parentId && post.image" class="post-image post-picture" src={{post.image}} alt="">
+    <div class="post-container">
+        <img *ngIf="post.author.profilePicture" class="post-image reply-profile-picture" src={{post.author.profilePicture}}
+            alt="profile picture">
+        <img *ngIf="!post.author.profilePicture" class="post-image reply-profile-picture"
+            src='https://cdn-icons-png.flaticon.com/512/847/847969.png' alt="placeholder profile picture">
+        <p class="post-date">
+            Posted on
+            <time datetime="16-11-2018">
+                {{post.creationDate | date:'EE, MMMM dd, yyyy h:mm a'}}
+            </time>
+            by
+            <a class="post-author" (click)="loadProfile(post.author.username)">
+                {{post.author.username}}
+            </a>
+        </p>
+        <h2 class="post-title">{{post.title}}</h2>
+        <p class="post-content">{{post.content}}</p>
+        <div class="likes-reply-button-row">
+            <div>
+                <div class="number-of-likes">
+                    {{post.likes.length}}
+                </div>
+                <div (click)="createLike(post.id, $event)" [ngClass]="isLiked ? 'dislike' : 'like'">
+                    ♥
+                </div>
+            </div>
+            <div [ngClass]="showReplyForm ? 'reply-button' : 'reply-button-clicked'" (click)="toggleReply($event)">
+                REPLY
             </div>
         </div>
+        <div *ngIf="post.comments.length > 0" (click)="click($event)"
+            [ngClass]="showComments ? 'show-comments' : 'hide-comments'">
+            {{showComments? "Hide" : "View"}} {{numberOfNestedReplies}} {{numberOfNestedReplies === 1 ? "reply" :
+            "replies"}} {{showComments ? "🔼" : "🔽"}}
+        </div>
     </div>
-</ng-container>
+</div>
+
+<!-- hidden reply form. only show if showReplyForm is true -->
+<form class="reply-form" *ngIf="showReplyForm">
+    <textarea (click)="stopClickPropagation($event)" class="reply-form-textarea" placeholder="Add a reply..."
+        type="text" id="exampleFormControlTextarea1" rows="3" [(ngModel)]="content" name="content"></textarea>
+    <button class="btn btn-primary" (click)="createComment(post.id, content)">Reply</button>
+</form>
+
+<!-- 
+    hidden replies. only show if showComments is true and there are replies
+    this is using the same component within itself. 
+    make sure to use a proper base case in ngIf to avoid infinite loop 
+-->
+<div class="replies" *ngIf="showComments && post.comments.length > 0">
+    <div *ngFor="let comment of post.comments">
+        <app-post [showComments]="false" [post]="comment"></app-post>
+    </div>
+</div>
